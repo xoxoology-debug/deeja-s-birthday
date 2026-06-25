@@ -159,7 +159,7 @@ function fireConfetti() {
 // --- FULL RESET APPLICATION ---
 function resetWholeApp() {
     clearKey();
-    
+
     // Hide all main screens
     const screens = ["view-loading", "view-intro", "view-age", "view-memories", "letter-content-box"];
     screens.forEach(s => {
@@ -174,9 +174,17 @@ function resetWholeApp() {
     const envelopeBox = document.getElementById("envelope-box");
     const loadingView = document.getElementById("view-loading");
 
+    // 👇 یہ نیا کوڈ Add کرنا ہے
+    const letterBox = document.getElementById("letter-content-box");
+
     if (curtainWrapper) curtainWrapper.classList.remove("curtain-opened");
     if (lockContent) lockContent.style.display = "flex";
     if (mainAppContent) mainAppContent.classList.add("hidden-view");
     if (envelopeBox) envelopeBox.classList.remove("hidden-view");
     if (loadingView) loadingView.classList.remove("hidden-view");
+
+    // 👇 یہ بھی Add کرنا ہے
+    if (letterBox) {
+        letterBox.classList.add("hidden-view");
+    }
 }
