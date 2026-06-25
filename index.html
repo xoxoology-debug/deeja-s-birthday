@@ -4,33 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Happy Birthday - Premium</title>
-    <!-- Tailwind Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Confetti Library -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght=300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Custom CSS Link -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="h-screen w-screen flex items-center justify-center p-4 select-none relative overflow-hidden bg-[#0d0204]">
 
-    <!-- BACKGROUND LIGHT GLOWS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0d0204;
+            color: #f3e8e8;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .serif-font { font-family: 'Playfair Display', serif; }
+        
+        /* Premium Glass Panel UI from Video */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(25, 10, 12, 0.85) 0%, rgba(15, 5, 7, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(235, 68, 90, 0.25);
+            box-shadow: 0 0 35px rgba(213, 31, 55, 0.2), inset 0 0 15px rgba(255,255,255,0.02);
+        }
+        
+        /* KEYPAD BUTTONS GLOW */
+        .key-btn {
+            background: rgba(30, 12, 14, 0.6);
+            border: 1px solid rgba(235, 68, 90, 0.15);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .key-btn:active {
+            transform: scale(0.92);
+            background: rgba(235, 68, 90, 0.35);
+            box-shadow: 0 0 15px rgba(235, 68, 90, 0.5);
+        }
+
+        /* EXACT SPLIT CURTAIN ANIMATION Engine */
+        .curtain-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .curtain-panel {
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle at center, #230509 0%, #070102 100%);
+            border: 1px solid rgba(235, 68, 90, 0.1);
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            pointer-events: auto;
+        }
+        .curtain-left { transform-origin: left; }
+        .curtain-right { transform-origin: right; }
+        
+        /* Curtain Open States */
+        .curtain-opened .curtain-left { transform: translateX(-100%); }
+        .curtain-opened .curtain-right { transform: translateX(100%); }
+
+        /* Smooth Screen Fade In */
+        .fade-in-view {
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .hidden-view { display: none !important; }
+        
+        /* Dot active glow */
+        .dot-active {
+            background-color: #ef4444 !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 10px #ef4444;
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center p-4 select-none relative overflow-hidden">
+
     <div class="absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-rose-950/20 rounded-full blur-[100px] -top-20 -left-20 pointer-events-none"></div>
     <div class="absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-red-950/15 rounded-full blur-[100px] -bottom-20 -right-20 pointer-events-none"></div>
 
-    <!-- CURTAIN LAYER (Locks and Splits on Success) -->
     <div id="curtain-wrapper" class="curtain-container">
         <div class="curtain-panel curtain-left"></div>
         <div class="curtain-panel curtain-right"></div>
 
-        <!-- LOCK SCREEN CONTENT -->
         <div id="lock-content" class="absolute inset-0 flex items-center justify-center p-4 z-[110]">
             <div class="w-full max-w-sm glass-panel rounded-3xl p-6 flex flex-col items-center justify-between min-h-[75vh] max-h-[85vh]">
                 <div class="text-center w-full mt-2">
                     <div id="hint-trigger" class="w-16 h-16 mx-auto rounded-full border border-pink-500/30 flex items-center justify-center overflow-hidden cursor-pointer bg-pink-950/30 hover:border-pink-500/60 transition-colors">
                         <span class="text-xl animate-pulse">🔒</span>
                     </div>
-                    <h2 class="text-xl font-semibold tracking-[0.2em] mt-4 uppercase text-red-500/90 tracking-glow" style="text-shadow: 0 0 15px rgba(220,38,38,0.5);">LOCKED</h2>
+                    <h2 class="text-xl font-semibold tracking-[0.2em] mt-4 uppercase text-red-500/90" style="text-shadow: 0 0 15px rgba(220,38,38,0.5);">LOCKED</h2>
                     <p class="text-[10px] text-zinc-500 mt-1 italic">Hint - Click on picture to know passkey !</p>
                     
                     <div class="flex justify-center gap-3 my-6">
@@ -41,7 +109,6 @@
                     </div>
                 </div>
 
-                <!-- KEYPAD GRID -->
                 <div class="grid grid-cols-3 gap-3 w-full px-2 mb-2">
                     <button class="key-btn text-lg font-light py-3 rounded-xl text-zinc-300" onclick="pressKey('1')">1</button>
                     <button class="key-btn text-lg font-light py-3 rounded-xl text-zinc-300" onclick="pressKey('2')">2</button>
@@ -60,7 +127,6 @@
         </div>
     </div>
 
-    <!-- HINT MODAL -->
     <div id="hint-modal" class="fixed inset-0 bg-black/85 z-[150] flex items-center justify-center p-6 hidden-view">
         <div class="glass-panel max-w-xs w-full rounded-2xl p-5 relative flex flex-col items-center border border-red-500/30">
             <button id="close-hint" class="absolute top-2 right-4 text-zinc-400 hover:text-white text-2xl">&times;</button>
@@ -73,10 +139,8 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION SCREENS LAYER -->
     <div id="main-app-content" class="w-full max-w-sm hidden-view h-full flex items-center justify-center z-10">
         
-        <!-- LOADING VIEW -->
         <div id="view-loading" class="w-full glass-panel rounded-3xl p-6 flex flex-col items-center justify-center min-h-[75vh] text-center fade-in-view">
             <div class="text-4xl mb-4 animate-bounce">🐼</div>
             <p class="text-md text-zinc-300 font-medium">Hmm</p>
@@ -84,7 +148,6 @@
             <span class="text-[9px] text-zinc-600 tracking-widest uppercase mt-8 block">• JUST FOR YOU •</span>
         </div>
 
-        <!-- INTRO VIEW -->
         <div id="view-intro" class="w-full glass-panel rounded-3xl p-6 flex flex-col items-center justify-between min-h-[75vh] text-center hidden-view">
             <div></div>
             <div class="flex flex-col items-center">
@@ -97,7 +160,6 @@
             </button>
         </div>
 
-        <!-- AGE COUNTER VIEW -->
         <div id="view-age" class="w-full glass-panel rounded-3xl p-6 flex flex-col items-center justify-between min-h-[75vh] text-center hidden-view">
             <div></div>
             <div class="w-full">
@@ -125,7 +187,6 @@
             </button>
         </div>
 
-        <!-- CAROUSEL MEMORIES VIEW -->
         <div id="view-memories" class="w-full glass-panel rounded-3xl p-5 flex flex-col items-center justify-between min-h-[75vh] text-center hidden-view">
             <div class="w-full">
                 <h2 class="text-xl font-medium serif-font text-zinc-100 tracking-wide mt-1">Special Memories</h2>
@@ -148,7 +209,6 @@
             </button>
         </div>
 
-        <!-- FINAL LETTER BOX VIEW -->
         <div id="view-letter" class="w-full glass-panel rounded-3xl p-6 flex flex-col items-center justify-center min-h-[75vh] text-center hidden-view">
             <div id="envelope-box" class="flex flex-col items-center">
                 <h2 class="text-sm tracking-[0.15em] serif-font text-zinc-400 mb-6">A LETTER, JUST FOR YOU</h2>
@@ -180,7 +240,155 @@
 
     </div>
 
-    <!-- Script Link -->
-    <script src="script.js"></script>
+    <script>
+        let currentPasskey = "";
+        const CORRECT_PASSKEY = "2026";
+
+        // Hint System
+        document.addEventListener("DOMContentLoaded", () => {
+            const hintTrigger = document.getElementById("hint-trigger");
+            const hintModal = document.getElementById("hint-modal");
+            const closeHint = document.getElementById("close-hint");
+
+            if (hintTrigger && hintModal && closeHint) {
+                hintTrigger.addEventListener("click", () => hintModal.classList.remove("hidden-view"));
+                closeHint.addEventListener("click", () => hintModal.classList.add("hidden-view"));
+            }
+        });
+
+        function pressKey(num) {
+            if (currentPasskey.length >= 4) return;
+            currentPasskey += num;
+            updateDots();
+
+            if (currentPasskey.length === 4) {
+                setTimeout(() => {
+                    if (currentPasskey === CORRECT_PASSKEY) {
+                        unlockCurtains();
+                    } else {
+                        alert("Wrong Passkey! Check hint.");
+                        clearKey();
+                    }
+                }, 200);
+            }
+        }
+
+        function clearKey() {
+            currentPasskey = "";
+            updateDots();
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll(".dot");
+            dots.forEach((dot, index) => {
+                if (index < currentPasskey.length) {
+                    dot.classList.add("dot-active");
+                } else {
+                    dot.classList.remove("dot-active");
+                }
+            });
+        }
+
+        function unlockCurtains() {
+            document.getElementById("curtain-wrapper").classList.add("curtain-opened");
+            document.getElementById("lock-content").style.display = "none";
+
+            setTimeout(() => {
+                document.getElementById("main-app-content").classList.remove("hidden-view");
+                setTimeout(() => {
+                    changeView("view-loading", "view-intro");
+                    fireConfetti();
+                }, 2200);
+            }, 400);
+        }
+
+        function changeView(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            if (hideEl) hideEl.classList.add("hidden-view");
+            if (showEl) {
+                showEl.classList.remove("hidden-view");
+                showEl.classList.add("fade-in-view");
+            }
+            if(showId === 'view-age') {
+                runAgeCounter();
+            }
+        }
+
+        function runAgeCounter() {
+            let yr = document.getElementById('count-years');
+            let dy = document.getElementById('count-days');
+            let yVal = 18, dVal = 0;
+
+            let yInterval = setInterval(() => {
+                if(yVal < 19) { yVal++; if(yr) yr.innerText = yVal; } else clearInterval(yInterval);
+            }, 800);
+
+            let dInterval = setInterval(() => {
+                if(dVal < 19) { dVal++; if(dy) dy.innerText = dVal; } else clearInterval(dInterval);
+            }, 40);
+        }
+
+        const memoriesData = [
+            { text: "The day you stepped into my life and made everything beautiful... ✨" },
+            { text: "Your beautiful smile that instantly makes my worst days so much better. 😊" },
+            { text: "Every little laugh, silly argument, and sweet memory we share. 🐼" },
+            { text: "And today, celebrating another amazing year of your beautiful life! 🌸" }
+        ];
+        let currentMemoryIndex = 0;
+
+        function initMemoriesView() {
+            currentMemoryIndex = 0;
+            updateMemoryCard();
+            changeView("view-age", "view-memories");
+        }
+
+        function nextMemoryCard() {
+            currentMemoryIndex++;
+            if (currentMemoryIndex >= memoriesData.length) {
+                changeView("view-memories", "view-letter");
+            } else {
+                updateMemoryCard();
+            }
+        }
+
+        function updateMemoryCard() {
+            const cardTxt = document.getElementById("card-txt");
+            const cardNum = document.getElementById("card-num");
+            if (cardTxt) cardTxt.innerText = memoriesData[currentMemoryIndex].text;
+            if (cardNum) cardNum.innerText = currentMemoryIndex + 1;
+        }
+
+        function revealLetterText() {
+            changeView("envelope-box", "letter-content-box");
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            if (typeof confetti === "function") {
+                confetti({
+                    particleCount: 120,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#be123c', '#e11d48', '#ffffff']
+                });
+            }
+        }
+
+        function resetWholeApp() {
+            clearKey();
+            const screens = ["view-loading", "view-intro", "view-age", "view-memories", "letter-content-box"];
+            screens.forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.add("hidden-view");
+            });
+
+            document.getElementById("curtain-wrapper").classList.remove("curtain-opened");
+            document.getElementById("lock-content").style.display = "flex";
+            document.getElementById("main-app-content").classList.add("hidden-view");
+            document.getElementById("envelope-box").classList.remove("hidden-view");
+            document.getElementById("view-loading").classList.remove("hidden-view");
+        }
+    </script>
 </body>
 </html>
