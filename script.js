@@ -112,6 +112,26 @@ const memoriesData = [
     { text: "Every little laugh, silly argument, and sweet memory we share. 🐼" },
     { text: "And today, celebrating another amazing year of your beautiful life! 🌸" }
 ];
+const memoriesData = [
+{
+photo:"images/photo1.jpg",
+text:"..."
+},
+{
+photo:"images/photo2.jpg",
+text:"..."
+},
+{
+photo:"images/photo3.jpg",
+text:"..."
+},
+{
+photo:"images/photo4.jpg",
+text:"..."
+}
+   document.getElementById("memory-photo").src =
+memoriesData[currentMemoryIndex].photo; 
+];
 let currentMemoryIndex = 0;
 
 function initMemoriesView() {
@@ -188,3 +208,8 @@ function resetWholeApp() {
         letterBox.classList.add("hidden-view");
     }
 }
+hintModal.addEventListener("click",(e)=>{
+    if(e.target===hintModal){
+        hintModal.classList.add("hidden-view");
+    }
+});
