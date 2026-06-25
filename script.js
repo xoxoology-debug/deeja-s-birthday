@@ -1,135 +1,182 @@
-let enteredPin = "";
-const targetPin = "2026";
+// --- GLOBAL STATE ---
+let currentPasskey = "";
+const CORRECT_PASSKEY = "2026"; //
 
-const gallery = [
-    { id: 1, text: "Your gorgeous smile makes everything better ✨" },
-    { id: 2, text: "Throwback to one of the prettiest days! 🌸" },
-    { id: 3, text: "Always keeping these memories close to heart ❤️" }
-];
-let galleryIndex = 0;
+// --- HINT MODAL LOGIC ---
+const hintTrigger = document.getElementById("hint-trigger");
+const hintModal = document.getElementById("hint-modal");
+const closeHint = document.getElementById("close-hint");
 
-// Hint Modal Actions
-document.getElementById('hint-trigger').addEventListener('click', () => {
-    document.getElementById('hint-modal').classList.remove('hidden-view');
-});
+if (hintTrigger && hintModal && closeHint) {
+    hintTrigger.addEventListener("click", () => {
+        hintModal.classList.remove("hidden-view");
+    });
+    closeHint.addEventListener("click", () => {
+        hintModal.classList.add("hidden-view");
+    });
+}
 
-document.getElementById('close-hint').addEventListener('click', () => {
-    document.getElementById('hint-modal').classList.add('hidden-view');
-});
+// --- LOCKSCREEN KEYPAD FUNCTION ---
+function pressKey(num) {
+    if (currentPasskey.length >= 4) return;
+    
+    currentPasskey += num;
+    updateDots();
 
-function pressKey(val) {
-    if (enteredPin.length < 4) {
-        enteredPin += val;
-        updatePinDots();
-        if (enteredPin.length === 4) {
-            setTimeout(checkPinMatch, 250);
-        }
+    if (currentPasskey.length === 4) {
+        // Choti si delay taaki user ko 4th dot fill hota hua dikhe
+        setTimeout(() => {
+            if (currentPasskey === CORRECT_PASSKEY) {
+                unlockCurtains();
+            } else {
+                shakeAndResetDots();
+            }
+        }, 250);
     }
 }
 
 function clearKey() {
-    enteredPin = "";
-    updatePinDots();
+    currentPasskey = "";
+    updateDots();
 }
 
-function updatePinDots() {
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach((d, idx) => {
-        if (idx < enteredPin.length) {
-            d.classList.add('bg-red-600', 'border-red-600', 'scale-110');
+function updateDots() {
+    const dots = document.querySelectorAll(".dot");
+    dots.forEach((dot, index) => {
+        if (index < currentPasskey.length) {
+            dot.classList.add("bg-red-500", "border-red-500 shadow-glow");
         } else {
-            d.classList.remove('bg-red-600', 'border-red-600', 'scale-110');
+            dot.classList.remove("bg-red-500", "border-red-500 shadow-glow");
         }
     });
 }
 
-function checkPinMatch() {
-    if (enteredPin === targetPin) {
-        // Trigger Curtain Split
-        document.getElementById('curtain-wrapper').classList.add('curtain-opened');
-        document.getElementById('lock-content').style.display = 'none';
-        
-        // Load main system
-        setTimeout(() => {
-            document.getElementById('main-app-content').classList.remove('hidden-view');
-            setTimeout(() => {
-                changeView('view-loading', 'view-intro');
-            }, 2200);
-        }, 400);
-    } else {
-        alert("Wrong Passkey! Check hint.");
+function shakeAndResetDots() {
+    const lockContent = document.getElementById("lock-content");
+    lockContent.classList.add("animate-shake");
+    
+    // Reset dots with red error flash
+    const dots = document.querySelectorAll(".dot");
+    dots.forEach(dot => dot.classList.add("border-red-600", "bg-red-600/30"));
+
+    setTimeout(() => {
+        lockContent.classList.remove("animate-shake");
+        dots.forEach(dot => dot.classList.remove("border-red-600", "bg-red-600/30"));
         clearKey();
-    }
+    }, 500);
 }
 
+// --- UNLOCK & SPLIT CURTAINS ANIMATION ---
+function unlockCurtains() {
+    const curtainWrapper = document.getElementById("curtain-wrapper");
+    const lockContent = document.getElementById("lock-content");
+    const mainAppContent = document.getElementById("main-app-content");
+
+    // Hide lock screen UI elements smoothly
+    if (lockContent) lockContent.style.display = "none";
+
+    // Trigger CSS Side-Split Curtain Animation
+    if (curtainWrapper) {
+        curtainWrapper.classList.add("curtain-opened");
+    }
+
+    // Show Main App Layer after a short delay
+    setTimeout(() => {
+        if (mainAppContent) {
+            mainAppContent.classList.remove("hidden-view");
+            // Automatically switch from Loading screen to Intro screen after 2.5 seconds
+            setTimeout(() => {
+                changeView("view-loading", "view-intro");
+                fireConfetti();
+            }, 2500);
+        }
+    }, 400);
+}
+
+// --- MULTI-VIEW SCREEN NAVIGATOR ---
 function changeView(hideId, showId) {
-    document.getElementById(hideId).classList.add('hidden-view');
-    const showView = document.getElementById(showId);
-    showView.classList.remove('hidden-view');
-    showView.classList.add('fade-in-view');
+    const hideElement = document.getElementById(hideId);
+    const showElement = document.getElementById(showId);
 
-    if(showId === 'view-age') {
-        runAgeCounter();
+    if (hideElement) hideElement.classList.add("hidden-view");
+    if (showElement) {
+        showElement.classList.remove("hidden-view");
+        showElement.classList.add("fade-in-view");
     }
 }
 
-function runAgeCounter() {
-    let yr = document.getElementById('count-years');
-    let dy = document.getElementById('count-days');
-    let yVal = 18, dVal = 0;
-
-    let yInterval = setInterval(() => {
-        if(yVal < 19) { yVal++; yr.innerText = yVal; } else clearInterval(yInterval);
-    }, 800);
-
-    let dInterval = setInterval(() => {
-        if(dVal < 19) { dVal++; dy.innerText = dVal; } else clearInterval(dInterval);
-    }, 40);
-}
+// --- MEMORIES CARD CAROUSEL DATA ---
+const memoriesData = [
+    { text: "The day you stepped into my life and made everything beautiful... ✨" },
+    { text: "Your beautiful smile that instantly makes my worst days so much better. 😊" },
+    { text: "Every little laugh, silly argument, and sweet memory we share. 🐼" },
+    { text: "And today, celebrating another amazing year of your beautiful life! 🌸" }
+];
+let currentMemoryIndex = 0;
 
 function initMemoriesView() {
-    changeView('view-age', 'view-memories');
-    renderMemory();
+    currentMemoryIndex = 0;
+    updateMemoryCard();
+    changeView("view-age", "view-memories");
 }
 
 function nextMemoryCard() {
-    galleryIndex = (galleryIndex + 1) % gallery.length;
-    renderMemory();
+    currentMemoryIndex++;
+    if (currentMemoryIndex >= memoriesData.length) {
+        // Sab memories khatam hone par Message screen par bhej dein
+        changeView("view-memories", "view-letter");
+    } else {
+        updateMemoryCard();
+    }
 }
 
-function renderMemory() {
-    document.getElementById('card-num').innerText = gallery[galleryIndex].id;
-    document.getElementById('card-txt').innerText = gallery[galleryIndex].text;
+function updateMemoryCard() {
+    const cardTxt = document.getElementById("card-txt");
+    const cardNum = document.getElementById("card-num");
+    
+    if (cardTxt) cardTxt.innerText = memoriesData[currentMemoryIndex].text;
+    if (cardNum) cardNum.innerText = currentMemoryIndex + 1;
 }
 
+// --- FINAL ENVELOPE REVEAL ---
 function revealLetterText() {
-    document.getElementById('envelope-box').classList.add('hidden-view');
-    document.getElementById('letter-content-box').classList.remove('hidden-view');
+    changeView("envelope-box", "letter-content-box");
     fireConfetti();
 }
 
+// --- PARTY CELEBRATION EFFECT (CONFETTI) ---
 function fireConfetti() {
-    confetti({ 
-        particleCount: 140, 
-        spread: 80, 
-        origin: { y: 0.6 }, 
-        colors: ['#dc2626', '#f43f5e', '#ffffff'] 
-    });
+    if (typeof confetti === "function") {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#be123c', '#e11d48', '#fda4af', '#ffffff']
+        });
+    }
 }
 
+// --- FULL RESET APPLICATION ---
 function resetWholeApp() {
-    enteredPin = "";
-    galleryIndex = 0;
-    updatePinDots();
+    clearKey();
     
-    document.getElementById('curtain-wrapper').classList.remove('curtain-opened');
-    document.getElementById('lock-content').style.display = 'flex';
-    document.getElementById('main-app-content').classList.add('hidden-view');
-    
-    document.getElementById('letter-content-box').classList.add('hidden-view');
-    document.getElementById('envelope-box').classList.remove('hidden-view');
+    // Hide all main screens
+    const screens = ["view-loading", "view-intro", "view-age", "view-memories", "letter-content-box"];
+    screens.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add("hidden-view");
+    });
 
-    const views = ['view-loading', 'view-intro', 'view-age', 'view-memories', 'view-letter'];
-    views.forEach(v => document.getElementById(v).classList.add('hidden-view'));
-    document.getElementById('view-loading').classList.remove('hidden-view');
+    // Reset components to initial state
+    const curtainWrapper = document.getElementById("curtain-wrapper");
+    const lockContent = document.getElementById("lock-content");
+    const mainAppContent = document.getElementById("main-app-content");
+    const envelopeBox = document.getElementById("envelope-box");
+    const loadingView = document.getElementById("view-loading");
+
+    if (curtainWrapper) curtainWrapper.classList.remove("curtain-opened");
+    if (lockContent) lockContent.style.display = "flex";
+    if (mainAppContent) mainAppContent.classList.add("hidden-view");
+    if (envelopeBox) envelopeBox.classList.remove("hidden-view");
+    if (loadingView) loadingView.classList.remove("hidden-view");
 }
