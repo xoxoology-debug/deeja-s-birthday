@@ -85,3 +85,7 @@ body {
     80%{transform:translateX(6px);}
     100%{transform:translateX(0);}
 }
+
+.shadow-glow{
+    box-shadow:0 0 12px rgba(239,68,68,.9);
+}
